@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HazeSnap! | SDG 3</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f4f8f5;
+  color: #24352a;
+  line-height: 1.5;
+}
+
+/* WARNING BANNER */
+#broadcastBanner {
+  background: #dc2626;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-size: 13px;
+  font-weight: bold;
+  display: none;
+}
+
+/* HEADER */
+header {
+  background: #14532d;
+  color: white;
+  padding: 18px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* HOMEPAGE */
+.hero {
+  background: linear-gradient(to bottom, #dcfce7, #f0fdf4);
+  padding: 55px 8%;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 36px;
+  color: #14532d;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  margin: 0 auto 25px;
+  line-height: 1.7;
+  color: #166534;
+  max-width: 750px;
+}
+
+/* WEATHER WIDGET */
+.weather-widget {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+/* BUTTONS */
+button {
+  background: #15803d;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+  margin-top: 8px;
+}
+
+button:hover {
+  background: #166534;
+}
+
+section {
+  padding: 40px 8%;
+}
+
+h2 {
+  color: #14532d;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* HAZE LEVELS */
+.haze-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.haze-card {
+  padding: 18px;
+  border-radius: 10px;
+  border-left: 6px solid #cbd5e1;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.haze-card h3 {
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.haze-card p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.api-range {
+  font-weight: bold;
+  font-size: 13px;
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.05);
+}
+
+.good {
+  border-left-color: #22c55e;
+  background: #f0fdf4;
+}
+
+.moderate {
+  border-left-color: #eab308;
+  background: #fefce8;
+}
+
+.unhealthy {
+  border-left-color: #f97316;
+  background: #fff7ed;
+}
+
+.very-unhealthy {
+  border-left-color: #ec4899;
+  background: #fdf2f8;
+}
+
+.hazardous {
+  border-left-color: #ef4444;
+  background: #fef2f2;
+}
+
+/* FORM */
+label {
+  display: block;
+  font-weight: bold;
+  font-size: 14px;
+  color: #334155;
+  margin-top: 15px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+#preview {
+  max-width: 100%;
+  max-height: 220px;
+  display: none;
+  margin: 10px 0;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* AI RESULT */
+.result-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 15px;
+  display: none;
+}
+
+.result-box p {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.health-alert {
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.alert-good {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.alert-moderate {
+  background: #fef9c3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+
+.alert-unhealthy {
+  background: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+
+.alert-very-unhealthy {
+  background: #fce7f3;
+  color: #9d174d;
+  border: 1px solid #fbcfe8;
+}
+
+.alert-hazardous {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* DASHBOARD */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #f0fdf4;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 5px solid #15803d;
+}
+
+.stat-card h3 {
+  font-size: 24px;
+  color: #14532d;
+  margin-top: 5px;
+}
+
+.dashboard-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.dashboard-controls input {
+  max-width: 300px;
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+th {
+  background: #14532d;
+  color: white;
+}
+
+.status-select {
+  margin: 0;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* SOS BUTTON */
+.sos-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #dc2626;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 30px;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(220,38,38,0.4);
+  cursor: pointer;
+  z-index: 1000;
+  border: none;
+}
+
+.sos-float:hover {
+  background: #991b1b;
+}
+
+/* FOOTER */
+footer {
+  background: #14532d;
+  color: white;
+  text-align: center;
+  padding: 25px;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* RESPONSIVE */
+@media(max-width: 650px) {
+  header {
+    flex-direction: column;
+  }
+
+  nav {
+    justify-content: center;
+  }
+
+  .hero h1 {
+    font-size: 27px;
+  }
+
+  section {
+    padding: 30px 5%;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .weather-widget {
+    border-radius: 12px;
+  }
+}
+
+/* PRINT */
+@media print {
+  header, .hero, #levels, #report,
+  .sos-float, footer,
+  .dashboard-controls button {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  section {
+    padding: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- EMERGENCY WARNING -->
+<div id="broadcastBanner">
+  🚨 HAZE WARNING: Simulated API reading exceeds level 200.
+  Please follow the authorities' health advice.
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">🌿 HazeSnap!</div>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#levels">Haze Levels</a>
+    <a href="#report">Report & AI Analysis</a>
+    <a href="#dashboard">Local Authority Dashboard</a>
+  </nav>
+</header>
+
+<!-- HOMEPAGE -->
+<div class="hero" id="home">
+
+  <h1>"Catch the Haze to Protect Our Community"</h1>
+
+  <p>
+    Communities would together play their part in pursuit of healthier air quality by assisting the government in preventative actions. Snap a pic and get a reward!
+    <strong>SDG 3: Good Health and Well-being.</strong>
+  </p>
+
+  <div class="weather-widget">
+    <span>🌤️ Temp: <strong>32°C</strong></span>
+    <span>💨 Wind: <strong>14 km/h</strong></span>
+    <span>💧 Humidity: <strong>65%</strong></span>
+  </div>
+
+  <br>
+
+  <button onclick="location.href='#report'">
+    Start Quick Reporting
+  </button>
+
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+
+  <h2>🌍 About HazeSnap!</h2>
+
+  <div class="card">
+    <p>
+      HazeSnap is a platform that helps communities monitor haze and air pollution. Users can check air-quality information, receive health alerts and report haze incidents in their area. Community reports help improve awareness and support faster action to protect public health.
+    </p>
+    <br>
+    <p>
+      HazeSnap supports SDG 3: Good Health and Well-Being by promoting awareness, prevention, community participation and healthier communities.
+    </p>
+  </div>
+
+</section>
+
+<!-- HAZE LEVELS -->
+<section id="levels">
+
+  <h2>😷 Air Pollutant Index (API) Level Guide</h2>
+
+  <p style="margin-bottom:15px;color:#475569;font-size:14px;">
+    Guide to five air quality levels and health
+    protection measures.
+  </p>
+
+  <div class="haze-grid">
+
+    <div class="haze-card good">
+      <h3 style="color:#15803d;">1. Good</h3>
+      <span class="api-range">API 0–50</span>
+      <p><strong>Pollution:</strong> Very low.</p>
+      <p><strong>Advice:</strong> Outdoor activities can continue as usual.</p>
+    </div>
+
+    <div class="haze-card moderate">
+      <h3 style="color:#a16207;">2. Moderate</h3>
+      <span class="api-range">API 51–100</span>
+      <p><strong>Pollution:</strong> Moderate pollution.</p>
+      <p><strong>Advice:</strong> Sensitive individuals are encouraged to reduce heavy outdoor physical activity.</p>
+    </div>
+
+    <div class="haze-card unhealthy">
+      <h3 style="color:#c2410c;">3. Unhealthy</h3>
+      <span class="api-range">API 101–200</span>
+      <p><strong>Pollution:</strong> Unhealthy air quality.</p>
+      <p><strong>Advice:</strong> Limit outdoor activities, especially for vulnerable groups.</p>
+    </div>
+
+    <div class="haze-card very-unhealthy">
+      <h3 style="color:#be185d;">4. Very Unhealthy</h3>
+      <span class="api-range">API 201–300</span>
+      <p><strong>Pollution:</strong> Very high haze.</p>
+      <p><strong>Advice:</strong> Avoid outdoor activities and follow official health advice.</p>
+    </div>
+
+    <div class="haze-card hazardous">
+      <h3 style="color:#b91c1c;">5. Hazardous</h3>
+      <span class="api-range">API >300</span>
+      <p><strong>Pollution:</strong> Extreme pollution level.</p>
+      <p><strong>Advice:</strong> Reduce exposure to outdoor air and seek treatment if experiencing breathing difficulties.</p>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- REPORT FORM -->
+<section id="report">
+
+  <h2>📸 Smart AI Reporting & Analysis System</h2>
+
+  <div class="card">
+
+    <form id="reportForm">
+
+      <label>Incident Type / Smoke Source</label>
+
+      <select id="type" required>
+        <option value="">-- Select Incident Type --</option>
+        <option>Open Land Burning</option>
+        <option>Illegal Plastic Waste Burning</option>
+        <option>Domestic Waste / Garbage Burning</option>
+        <option>Industrial Smoke Pollution</option>
+        <option>Agricultural Waste Burning</option>
+      </select>
+
+      <label>Upload Incident Evidence Photo</label>
+
+      <input type="file" id="photo" accept="image/*" required>
+
+      <img id="preview" alt="Image Preview">
+
+      <label>Incident Location / District</label>
+
+      <input
+        type="text"
+        id="location"
+        placeholder="Example: Shah Alam, Selangor"
+        required
+      >
+
+      <button type="button" onclick="getGPS()">
+        📍 Get Current GPS Location
+      </button>
+
+      <p id="gps-status" style="margin:8px 0;font-size:13px;color:#475569;"></p>
+
+      <label>Additional Description & Wind Direction</label>
+
+      <textarea
+        id="description"
+        rows="3"
+        placeholder="State smoke condition, odor, or wind direction..."
+        required
+      ></textarea>
+
+      <button type="button" onclick="analyzeHazeData()">
+        🤖 Run AI Analysis & Health Index
+      </button>
+
+      <!-- AI RESULT -->
+      <div class="result-box" id="aiResult">
+
+        <h3 style="color:#14532d;margin-bottom:12px;">
+          📊 AI Analysis & Health Report
+        </h3>
+
+        <p>
+          <strong>Particulate Analysis:</strong>
+          <span id="res-pm">-</span>
+        </p>
+
+        <p>
+          <strong>Simulated API Index:</strong>
+          <span id="res-api" style="font-weight:bold;">0</span>
+        </p>
+
+        <p>
+          <strong>Health Level:</strong>
+          <span id="res-status" style="font-weight:bold;">-</span>
+        </p>
+
+        <p>
+          <strong>AI Confidence:</strong>
+          94.2% (Demo only)
+        </p>
+
+        <div id="healthAdviceBox" class="health-alert">
+          <strong>⚠️ SDG 3 Health Warning:</strong>
+          <span id="res-advice">-</span>
+        </div>
+
+        <p style="font-size:11px;margin-top:10px;color:#64748b;">
+          Note: This result is an academic simulation,
+          not an actual sensor reading or medical diagnosis.
+        </p>
+
+      </div>
+
+      <br>
+
+      <button type="submit" style="background:#0284c7;">
+        Submit Official Report (Demo)
+      </button>
+
+    </form>
+
+  </div>
+
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+
+  <h2>📊 Community Health & Management Dashboard</h2>
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <p>Total Cases Reported</p>
+      <h3 id="total-count">3</h3>
+    </div>
+
+    <div class="stat-card" style="border-left-color:#d97706;">
+      <p>Health Preparedness Status</p>
+      <h3 id="status-siaga"
+          style="font-size:18px;margin-top:10px;color:#b45309;">
+        Normal / Controlled
+      </h3>
+    </div>
+
+  </div>
+
+  <div class="dashboard-controls">
+
+    <input
+      type="text"
+      id="searchKeyword"
+      placeholder="🔍 Search location or case ID..."
+      onkeyup="filterTable()"
+    >
+
+    <button
+      type="button"
+      onclick="exportReportData()"
+      style="background:#0f766e;">
+      📥 Print / Download Report
+    </button>
+
+  </div>
+
+  <div class="card" style="overflow-x:auto;">
+
+    <table id="complaintTable">
+
+      <thead>
+        <tr>
+          <th>Case ID</th>
+          <th>Incident Type</th>
+          <th>Location / District</th>
+          <th>API & Health Level</th>
+          <th>Local Authority Action Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="reports-table-body">
+
+        <!-- SAMPLE CASE 1 -->
+        <tr>
+          <td><strong>HZ-003</strong></td>
+          <td>Illegal Plastic Waste Burning</td>
+          <td>Klang, Selangor</td>
+          <td>
+            <span style="color:#c2410c;font-weight:bold;">API 182</span>
+            <br><small>Unhealthy</small>
+          </td>
+          <td>
+            <select class="status-select"
+              onchange="updateStatusColor(this)">
+              <option value="Baru">Newly Received</option>
+              <option value="Siasatan" selected>Under Local Authority Investigation</option>
+              <option value="Selesai">Completed / Action Taken</option>
+            </select>
+          </td>
+        </tr>
+
+        <!-- SAMPLE CASE 2 -->
+        <tr>
+          <td><strong>HZ-002</strong></td>
+          <td>Industrial Smoke Pollution</td>
+          <td>Shah Alam, Selangor</td>
+          <td>
+            <span style="color:#c2410c;font-weight:bold;">API 124</span>
+            <br><small>Unhealthy</small>
+          </td>
+          <td>
+            <select class="status-select"
+              onchange="updateStatusColor(this)">
+              <option value="Baru" selected>Newly Received</option>
+              <option value="Siasatan">Under Local Authority Investigation</option>
+              <option value="Selesai">Completed / Action Taken</option>
+            </select>
+          </td>
+        </tr>
+
+        <!-- SAMPLE CASE 3 -->
+        <tr>
+          <td><strong>HZ-001</strong></td>
+          <td>Open Land Burning</td>
+          <td>Kuala Langat, Selangor</td>
+          <td>
+            <span style="color:#15803d;font-weight:bold;">API 78</span>
+            <br><small>Moderate</small>
+          </td>
+          <td>
+            <select class="status-select"
+              onchange="updateStatusColor(this)">
+              <option value="Baru">Newly Received</option>
+              <option value="Siasatan">Under Local Authority Investigation</option>
+              <option value="Selesai" selected>Completed / Action Taken</option>
+            </select>
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+<!-- SOS BUTTON -->
+<button class="sos-float" onclick="showSOS()">
+  🚨 SOS Hotline
+</button>
+
+<!-- FOOTER -->
+<footer>
+
+  <p>
+    HazeSnap Advanced: GovTech Technology Integration & SDG 3
+    for People's Well-being 🌱
+  </p>
+
+  <p style="font-size:12px;margin-top:5px;color:#a7f3d0;">
+    Degree Level Academic Prototype Project
+  </p>
+
+</footer>
+
+<script>
+
+/* GLOBAL VARIABLES */
+let reportCounter = 3;
+let currentApiScore = 0;
+let currentHealthStatus = "";
+let currentAlertClass = "";
+
+
+/* GPS FUNCTION */
+function getGPS() {
+
+  if (!navigator.geolocation) {
+    alert("Your browser does not support GPS functionality.");
+    return;
+  }
+
+  document.getElementById("gps-status").innerText =
+    "Detecting location...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      let lat = position.coords.latitude.toFixed(4);
+      let lon = position.coords.longitude.toFixed(4);
+
+      document.getElementById("gps-status").innerText =
+        `Coordinates detected: Lat ${lat}, Lon ${lon}`;
+
+      document.getElementById("location").value =
+        `GPS Coordinates (${lat}, ${lon})`;
+
+    },
+
+    function() {
+
+      document.getElementById("gps-status").innerText =
+        "Failed to detect GPS. Please enter location manually.";
+
+    }
+
+  );
+
+}
+
+
+/* IMAGE PREVIEW */
+document.getElementById("photo").onchange = function(event) {
+
+  const file = event.target.files[0];
+
+  if (file) {
+
+    const preview = document.getElementById("preview");
+
+    preview.src = URL.createObjectURL(file);
+
+    preview.style.display = "block";
+
+  }
+
+};
+
+
+/* AI ANALYSIS SIMULATION */
+function analyzeHazeData() {
+
+  const photo = document.getElementById("photo");
+  const type = document.getElementById("type").value;
+
+  if (!photo.files.length) {
+    alert("Please upload an evidence photo first.");
+    return;
+  }
+
+  if (!type) {
+    alert("Please select the incident type first.");
+    return;
+  }
+
+  // Simulated API reading
+  currentApiScore =
+    Math.floor(Math.random() * 331) + 20;
+
+  let adviceText = "";
+  let pmText = "";
+
+  if (currentApiScore <= 50) {
+
+    currentHealthStatus = "Good";
+    currentAlertClass = "health-alert alert-good";
+
+    pmText = "Low particulate density.";
+
+    adviceText =
+      "Air quality is good. Outdoor activities can continue as usual.";
+
+  }
+
+  else if (currentApiScore <= 100) {
+
+    currentHealthStatus = "Moderate";
+    currentAlertClass = "health-alert alert-moderate";
+
+    pmText = "Low to moderate particulate density.";
+
+    adviceText =
+      "Air quality is moderate. Sensitive individuals are encouraged to monitor air conditions.";
+
+  }
+
+  else if (currentApiScore <= 200) {
+
+    currentHealthStatus = "Unhealthy";
+    currentAlertClass = "health-alert alert-unhealthy";
+
+    pmText = "Simulated high particulate density.";
+
+    adviceText =
+      "Vulnerable groups such as children, the elderly, and individuals with respiratory issues are advised to reduce outdoor activities.";
+
+  }
+
+  else if (currentApiScore <= 300) {
+
+    currentHealthStatus = "Very Unhealthy";
+    currentAlertClass = "health-alert alert-very-unhealthy";
+
+    pmText = "Simulated very high particulate density.";
+
+    adviceText =
+      "Avoid outdoor activities and follow official health instructions.";
+
+  }
+
+  else {
+
+    currentHealthStatus = "Hazardous";
+    currentAlertClass = "health-alert alert-hazardous";
+
+    pmText = "Simulated particulate density at extreme levels.";
+
+    adviceText =
+      "Reduce exposure to outdoor air. Seek treatment if experiencing breathing difficulties.";
+
+  }
+
+  // Update result
+  document.getElementById("res-pm").innerText = pmText;
+
+  document.getElementById("res-api").innerText =
+    currentApiScore;
+
+  document.getElementById("res-status").innerText =
+    currentHealthStatus;
+
+  const adviceBox =
+    document.getElementById("healthAdviceBox");
+
+  adviceBox.className = currentAlertClass;
+
+  document.getElementById("res-advice").innerText =
+    adviceText;
+
+  document.getElementById("aiResult").style.display =
+    "block";
+
+  // Emergency broadcast
+  if (currentApiScore > 200) {
+
+    document.getElementById("broadcastBanner").style.display =
+      "block";
+
+  }
+
+  alert("Simulation analysis complete! Please check the results.");
+
+}
+
+
+/* SUBMIT COMPLAINT */
+document.getElementById("reportForm").onsubmit =
+function(event) {
+
+  event.preventDefault();
+
+  if (currentApiScore === 0) {
+
+    alert("Please run the AI analysis first.");
+
+    return;
+
+  }
+
+  reportCounter++;
+
+  const caseId =
+    "HZ-" + String(reportCounter).padStart(3, "0");
+
+  const incidentType =
+    document.getElementById("type").value;
+
+  const locationText =
+    document.getElementById("location").value;
+
+  // Determine API text colour
+  let apiColor = "#15803d";
+
+  if (currentApiScore > 300) {
+    apiColor = "#991b1b";
+  }
+  else if (currentApiScore > 200) {
+    apiColor = "#9d174d";
+  }
+  else if (currentApiScore > 100) {
+    apiColor = "#c2410c";
+  }
+  else if (currentApiScore > 50) {
+    apiColor = "#a16207";
+  }
+
+  // Create new row safely
+  const tableBody =
+    document.getElementById("reports-table-body");
+
+  const newRow = document.createElement("tr");
+
+  function createCell(content) {
+
+    const cell = document.createElement("td");
+
+    cell.textContent = content;
+
+    return cell;
+
+  }
+
+  newRow.appendChild(createCell(caseId));
+
+  newRow.appendChild(createCell(incidentType));
+
+  newRow.appendChild(createCell(locationText));
+
+  const apiCell = document.createElement("td");
+
+  const apiSpan = document.createElement("span");
+
+  apiSpan.style.color = apiColor;
+  apiSpan.style.fontWeight = "bold";
+  apiSpan.textContent = "API " + currentApiScore;
+
+  const healthSmall = document.createElement("small");
+
+  healthSmall.textContent = currentHealthStatus;
+
+  apiCell.appendChild(apiSpan);
+  apiCell.appendChild(document.createElement("br"));
+  apiCell.appendChild(healthSmall);
+
+  newRow.appendChild(apiCell);
+
+  // Editable status
+  const statusCell = document.createElement("td");
+
+  const statusSelect = document.createElement("select");
+
+  statusSelect.className = "status-select";
+
+  const statuses = [
+    ["Baru", "Newly Received"],
+    ["Siasatan", "Under Local Authority Investigation"],
+    ["Selesai", "Completed / Action Taken"]
+  ];
+
+  statuses.forEach(function(status) {
+
+    const option = document.createElement("option");
+
+    option.value = status[0];
+    option.textContent = status[1];
+
+    statusSelect.appendChild(option);
+
+  });
+
+  statusSelect.addEventListener("change", function() {
+    updateStatusColor(this);
+  });
+
+  statusCell.appendChild(statusSelect);
+
+  newRow.appendChild(statusCell);
+
+  tableBody.prepend(newRow);
+
+  // Update statistics
+  document.getElementById("total-count").innerText =
+    reportCounter;
+
+  const siaga =
+    document.getElementById("status-siaga");
+
+  if (currentApiScore > 200) {
+
+    siaga.innerText = "EMERGENCY WARNING ACTIVE!";
+    siaga.style.color = "#dc2626";
+
+  }
+
+  else if (currentApiScore > 100) {
+
+    siaga.innerText = "Health Alert";
+    siaga.style.color = "#d97706";
+
+  }
+
+  alert(
+    "Report successfully submitted!\n" +
+    "Reference No.: " + caseId +
+    "\nStatus: Newly Received"
+  );
+
+  // Reset form
+  this.reset();
+
+  document.getElementById("preview").style.display =
+    "none";
+
+  document.getElementById("aiResult").style.display =
+    "none";
+
+  document.getElementById("gps-status").innerText =
+    "";
+
+  currentApiScore = 0;
+  currentHealthStatus = "";
+
+};
+
+
+/* SEARCH DASHBOARD */
+function filterTable() {
+
+  let input =
+    document.getElementById("searchKeyword")
+    .value.toLowerCase();
+
+  let rows =
+    document.getElementById("reports-table-body")
+    .getElementsByTagName("tr");
+
+  for (let i = 0; i < rows.length; i++) {
+
+    let text = rows[i].textContent.toLowerCase();
+
+    rows[i].style.display =
+      text.includes(input) ? "" : "none";
+
+  }
+
+}
+
+
+/* PRINT REPORT */
+function exportReportData() {
+
+  window.print();
+
+}
+
+
+/* UPDATE STATUS COLOUR */
+function updateStatusColor(selectObj) {
+
+  if (selectObj.value === "Selesai") {
+
+    selectObj.style.background = "#dcfce7";
+    selectObj.style.color = "#166534";
+
+  }
+
+  else if (selectObj.value === "Siasatan") {
+
+    selectObj.style.background = "#fef9c3";
+    selectObj.style.color = "#854d0e";
+
+  }
+
+  else {
+
+    selectObj.style.background = "white";
+    selectObj.style.color = "#1e293b";
+
+  }
+
+}
+
+
+/* SOS FUNCTION */
+function showSOS() {
+
+  alert(
+    "🚨 HAZECOP EMERGENCY INFORMATION\n\n" +
+    "Fire Emergency: Call 999\n" +
+    "Environmental Complaint: Department of Environment (JAS)\n\n" +
+    "This is a prototype. Please contact official emergency services for actual emergencies."
+  );
+
+}
+
+</script>
+
+</body>
+</html>
